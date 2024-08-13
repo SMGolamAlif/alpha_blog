@@ -1,0 +1,13 @@
+*,*::before,*::after {
+  box-sizing: border-box;
+}
+body{
+    background-color: #fefefe;
+    color: #222;
+}
+@media screen and (max-width: 900px) {
+  .m-mw-100{
+      min-width: 100%;
+  }
+  
+}

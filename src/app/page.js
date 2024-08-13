@@ -1,95 +1,100 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import Card from "@/Components/card/card";
+import config from "@/config";
+
+// const fetchBlogs = async () => {
+//    const reqOption = {
+//        headers: {
+//            Authorization : `Bearer ${process.env.API_TOKEN}`
+//        }
+//    }
+//    const request = await fetch(`${config.api}/api/blogs?populate=*`);
+//    const response = await request.json();
+//    return response;
+// }
+
+const fetchBlogs = async (params) => {
+  const token =
+    "8e50cdb0b0d2b3c330b9f70ea42fcb046e6b71b77a3ab4c59ead32938c610d347c072e1a15604523cefb84adf6ac2e813ec928c04f7dca6da6435d0b102c678eedf9a795249e930420f5ea0d1daada0fc13ea706d2788caea2b2b1a9509bf1ca8a0a0b4cfd2f1b5697079c0c56afc6d7bad01bd38d0bb6dff76e4eb1ab7661a9";
+  const reqOption = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+  const response = await fetch(
+    "http://127.0.0.1:1337/api/blogs?populate=*${params}",
+    reqOption
+  );
+  console.log(response);
+  const data = await response.json();
+  return data;
+};
+const Home = async () => {
+
+  useEffect( async () => {
+    const [featuredBlog, BLOGS] = await Promise.all([
+      fetchBlogs("&filters[IsFeatured][$eq]=true"),
+      fetchBlogs("&filters[IsFeatured][$eq]=false"),
+    ]);
+
+  } ,[])
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="container pb-80">
+      {featuredBlog.data.map((featuredBlog) => (
+        <>
+          <Card
+            label={featuredBlog.attributes.Category}
+            title={featuredBlog.attributes.Title}
+            summary={featuredBlog.attributes.Summary}
+            href={`/${featuredBlog.attributes.Slug}`}
+            imgSrc={
+              featuredBlog.attributes.FeaturedImage
+                ? `${config.api}${featuredBlog.attributes.FeaturedImage.attributes.url}`
+                : "/default-image.jpg"
+            }
+            imgAlt="Featured Image"
+            className="mb-40"
+          />
+        </>
+      ))}
+
+      <div className="row">
+        <div className="col col_4 m-mw-100">
+          <Card
+            label="Featured"
+            title="This is the title"
+            summary="This is the summary"
+            href="https://www.google.com"
+            className="mb-40"
+          />
+        </div>
+        <div className="col col_4 m-mw-100">
+          <Card
+            label="Featured"
+            title="This is the title"
+            summary="This is the summary"
+            href="https://www.google.com"
+            className="mb-40"
+          />
+        </div>
+        <div className="col col_4 m-mw-100">
+          <Card
+            label="Featured"
+            title="This is the title"
+            summary="This is the summary"
+            href="https://www.google.com"
+            className="mb-40"
+          />
         </div>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </div>
   );
-}
+};
+
+export default Home;

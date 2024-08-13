@@ -1,0 +1,7 @@
+$fontWeight: (600);
+
+@each $fw in $paddingTop {
+  .fw-#{$fw} {
+    font-weight: #{$fw}px;
+  }
+}
